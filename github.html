@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hopeful Generation School - Result Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        /* Login Page Styles */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 400px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .school-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .school-logo h2 {
+            color: #667eea;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .login-box h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102,126,234,0.4);
+        }
+
+        .error-message {
+            color: #dc3545;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            display: none;
+        }
+
+        /* Main Application Styles */
+        .main-container {
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .school-name {
+            font-size: 2em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .school-motto {
+            font-style: italic;
+            opacity: 0.9;
+            margin-bottom: 15px;
+        }
+
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .user-info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .form-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .search-section {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-section input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .grade {
+            font-weight: bold;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
+        .grade-A { background: #d4edda; color: #155724; }
+        .grade-B { background: #d1ecf1; color: #0c5460; }
+        .grade-C { background: #fff3cd; color: #856404; }
+        .grade-D { background: #f8d7da; color: #721c24; }
+        .grade-F { background: #f5c6cb; color: #721c24; }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 5px 12px;
+            font-size: 12px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .content { padding: 15px; }
+            th, td { padding: 8px; font-size: 12px; }
+            .user-info, .logout-btn { position: static; margin: 5px; display: inline-block; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginContainer">
+        <div class="login-box">
+            <div class="school-logo">
+                <h2>🏫 Hopeful Generation School</h2>
+                <p>Excellence in Education</p>
+            </div>
+            <h2>Login to System</h2>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>Username</label>
+                    <input type="text" id="username" required placeholder="Enter username">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="password" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+                <div class="error-message" id="errorMessage">
+                    Invalid username or password!
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div class="main-container" id="mainContainer">
+        <div class="container">
+            <div class="header">
+                <div class="user-info">
+                    👤 Logged in as: <span id="loggedUser">Admin</span>
+                </div>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+                <div class="school-name">🏫 Hopeful Generation School</div>
+                <div class="school-motto">"Empowering Minds, Building Futures"</div>
+                <p>Student Result Management System</p>
+            </div>
+            
+            <div class="content">
+                <div class="form-section">
+                    <h2>Add New Student Result</h2>
+                    <form id="studentForm">
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <label>Student Name *</label>
+                                <input type="text" id="studentName" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Roll Number *</label>
+                                <input type="text" id="rollNumber" required>
+                            </div>
+                            <div class="input-group">
+                                <label>Grade *</label>
+                                <select id="grade">
+                                    <option>Grade 1</option><option>Grade 2</option><option>Grade 3</option>
+                                    <option>Grade 4</option><option>Grade 5</option><option>Grade 6</option>
+                                    <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option>
+                                    <option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+                                </select>
+                            </div>
+                            <div class="input-group"><label>Biology</label><input type="number" id="biology" min="0" max="100" required></div>
+                            <div class="input-group"><label>Chemistry</label><input type="number" id="chemistry" min="0" max="100" required></div>
+                            <div class="input-group"><label>Physics</label><input type="number" id="physics" min="0" max="100" required></div>
+                            <div class="input-group"><label>Agriculture</label><input type="number" id="agriculture" min="0" max="100" required></div>
+                            <div class="input-group"><label>ICT</label><input type="number" id="ict" min="0" max="100" required></div>
+                            <div class="input-group"><label>English</label><input type="number" id="english" min="0" max="100" required></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">➕ Add Student Record</button>
+                        <button type="button" class="btn btn-danger" onclick="clearForm()">🗑️ Clear Form</button>
+                    </form>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-card"><h3>Total Students</h3><div class="number" id="totalStudents">0</div></div>
+                    <div class="stat-card"><h3>Average Percentage</h3><div class="number" id="avgPercentage">0%</div></div>
+                    <div class="stat-card"><h3>Passing Rate</h3><div class="number" id="passingRate">0%</div></div>
+                </div>
+                
+                <div class="search-section">
+                    <input type="text" id="searchInput" placeholder="🔍 Search by name or roll number..." onkeyup="searchRecords()">
+                    <button class="btn btn-success" onclick="exportToCSV()">📥 Export to CSV</button>
+                    <button class="btn btn-warning" onclick="printReport()">🖨️ Print Report</button>
+                </div>
+                
+                <div class="table-container">
+                    <table id="resultTable">
+                        <thead><tr><th>Roll No</th><th>Student Name</th><th>Grade</th><th>Bio</th><th>Chem</th><th>Phy</th><th>Agri</th><th>ICT</th><th>Eng</th><th>Total</th><th>%</th><th>Grade</th><th>Actions</th></tr></thead>
+                        <tbody id="tableBody"><tr><td colspan="13" style="text-align: center;">No records found</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="footer"><p>© 2024 Hopeful Generation School - Excellence in Education</p></div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal"><div class="modal-content"><h2>Edit Student Record</h2><form id="editForm"><input type="hidden" id="editIndex">
+        <div class="input-group"><label>Student Name</label><input type="text" id="editName" required></div>
+        <div class="input-group"><label>Roll Number</label><input type="text" id="editRoll" required></div>
+        <div class="input-group"><label>Grade</label><select id="editGrade"><option>Grade 1</option><option>Grade 2</option><option>Grade 3</option><option>Grade 4</option><option>Grade 5</option><option>Grade 6</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+        <div class="input-group"><label>Biology</label><input type="number" id="editBiology" min="0" max="100" required></div>
+        <div class="input-group"><label>Chemistry</label><input type="number" id="editChemistry" min="0" max="100" required></div>
+        <div class="input-group"><label>Physics</label><input type="number" id="editPhysics" min="0" max="100" required></div>
+        <div class="input-group"><label>Agriculture</label><input type="number" id="editAgriculture" min="0" max="100" required></div>
+        <div class="input-group"><label>ICT</label><input type="number" id="editICT" min="0" max="100" required></div>
+        <div class="input-group"><label>English</label><input type="number" id="editEnglish" min="0" max="100" required></div>
+        <div style="margin-top:20px"><button type="submit" class="btn btn-primary">Update</button><button type="button" class="btn btn-danger" onclick="closeModal()">Cancel</button></div>
+    </form></div></div>
+
+    <script>
+        let students = [];
+        let currentUser = null;
+        const users = { admin: { password: 'admin123', role: 'Administrator' }, teacher: { password: 'teacher123', role: 'Teacher' } };
+        
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (users[username] && users[username].password === password) {
+                currentUser = { username, role: users[username].role };
+                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('loggedUser').textContent = `${username} (${users[username].role})`;
+                loadData();
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+                setTimeout(() => document.getElementById('errorMessage').style.display = 'none', 3000);
+            }
+        });
+        
+        function logout() { localStorage.removeItem('currentUser'); location.reload(); }
+        
+        function checkSession() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('loggedUser').textContent = `${currentUser.username} (${currentUser.role})`;
+                loadData();
+            }
+        }
+        
+        function loadData() {
+            const savedData = localStorage.getItem('hopefulGenerationRecords');
+            if (savedData) students = JSON.parse(savedData);
+            else students = [
+                { name: "John Doe", roll: "101", grade: "Grade 10", biology: 85, chemistry: 78, physics: 82, agriculture: 88, ict: 90, english: 86 },
+                { name: "Jane Smith", roll: "102", grade: "Grade 10", biology: 92, chemistry: 89, physics: 94, agriculture: 91, ict: 88, english: 93 }
+            ];
+            updateDisplay();
+        }
+        
+        function saveData() { localStorage.setItem('hopefulGenerationRecords', JSON.stringify(students)); }
+        function calculateTotal(s) { return s.biology + s.chemistry + s.physics + s.agriculture + s.ict + s.english; }
+        function calculatePercentage(s) { return ((calculateTotal(s) / 600) * 100).toFixed(2); }
+        function calculateGrade(p) { if(p>=90) return {grade:'A+',class:'grade-A'}; if(p>=80) return {grade:'A',class:'grade-A'}; if(p>=70) return {grade:'B',class:'grade-B'}; if(p>=60) return {grade:'C',class:'grade-C'}; if(p>=50) return {grade:'D',class:'grade-D'}; return {grade:'F',class:'grade-F'}; }
+        function isPassed(s) { return s.biology>=33 && s.chemistry>=33 && s.physics>=33 && s.agriculture>=33 && s.ict>=33 && s.english>=33; }
+        
+        function updateStatistics() {
+            let total = students.length;
+            if(total===0) { document.getElementById('totalStudents').textContent='0'; document.getElementById('avgPercentage').textContent='0%'; document.getElementById('passingRate').textContent='0%'; return; }
+            let totalP=0, passed=0;
+            students.forEach(s=>{ totalP+=parseFloat(calculatePercentage(s)); if(isPassed(s)) passed++; });
+            document.getElementById('totalStudents').textContent=total;
+            document.getElementById('avgPercentage').textContent=(totalP/total).toFixed(2)+'%';
+            document.getElementById('passingRate').textContent=((passed/total)*100).toFixed(2)+'%';
+        }
+        
+        function displayRecords(filtered=null) {
+            let data = filtered||students;
+            let tbody = document.getElementById('tableBody');
+            if(data.length===0) { tbody.innerHTML='<tr><td colspan="13" style="text-align:center">No records found</td></tr>'; return; }
+            tbody.innerHTML = data.map(s=>{ let total=calculateTotal(s), p=calculatePercentage(s), g=calculateGrade(p); let idx=students.findIndex(x=>x.roll===s.roll && x.name===s.name);
+                return `<tr><td>${s.roll}</td><td>${s.name}</td><td>${s.grade}</td><td>${s.biology}</td><td>${s.chemistry}</td><td>${s.physics}</td><td>${s.agriculture}</td><td>${s.ict}</td><td>${s.english}</td><td><strong>${total}</strong></td><td>${p}%</td><td><span class="grade ${g.class}">${g.grade}</span></td><td class="action-buttons"><button class="btn btn-primary btn-small" onclick="editStudent(${idx})">Edit</button><button class="btn btn-danger btn-small" onclick="deleteStudent(${idx})">Delete</button></td></tr>`;
+            }).join('');
+            updateStatistics();
+        }
+        
+        function searchRecords() { let term=document.getElementById('searchInput').value.toLowerCase(); displayRecords(students.filter(s=>s.name.toLowerCase().includes(term)||s.roll.toLowerCase().includes(term))); }
+        document.getElementById('studentForm').addEventListener('submit',function(e){ e.preventDefault(); let s={name:document.getElementById('studentName').value, roll:document.getElementById('rollNumber').value, grade:document.getElementById('grade').value, biology:parseInt(document.getElementById('biology').value), chemistry:parseInt(document.getElementById('chemistry').value), physics:parseInt(document.getElementById('physics').value), agriculture:parseInt(document.getElementById('agriculture').value), ict:parseInt(document.getElementById('ict').value), english:parseInt(document.getElementById('english').value)}; if(students.some(x=>x.roll===s.roll)){ alert('Roll number exists!'); return; } students.push(s); saveData(); updateDisplay(); clearForm(); alert('Added!'); });
+        function clearForm() { document.getElementById('studentForm').reset(); }
+        function deleteStudent(i) { if(confirm('Delete?')){ students.splice(i,1); saveData(); updateDisplay(); alert('Deleted!'); } }
+        function editStudent(i) { let s=students[i]; document.getElementById('editIndex').value=i; document.getElementById('editName').value=s.name; document.getElementById('editRoll').value=s.roll; document.getElementById('editGrade').value=s.grade; document.getElementById('editBiology').value=s.biology; document.getElementById('editChemistry').value=s.chemistry; document.getElementById('editPhysics').value=s.physics; document.getElementById('editAgriculture').value=s.agriculture; document.getElementById('editICT').value=s.ict; document.getElementById('editEnglish').value=s.english; document.getElementById('editModal').style.display='flex'; }
+        document.getElementById('editForm').addEventListener('submit',function(e){ e.preventDefault(); let i=parseInt(document.getElementById('editIndex').value); let s={name:document.getElementById('editName').value, roll:document.getElementById('editRoll').value, grade:document.getElementById('editGrade').value, biology:parseInt(document.getElementById('editBiology').value), chemistry:parseInt(document.getElementById('editChemistry').value), physics:parseInt(document.getElementById('editPhysics').value), agriculture:parseInt(document.getElementById('editAgriculture').value), ict:parseInt(document.getElementById('editICT').value), english:parseInt(document.getElementById('editEnglish').value)}; if(students.some((x,idx)=>x.roll===s.roll && idx!==i)){ alert('Roll number exists!'); return; } students[i]=s; saveData(); updateDisplay(); closeModal(); alert('Updated!'); });
+        function closeModal() { document.getElementById('editModal').style.display='none'; }
+        function exportToCSV() { if(students.length===0){ alert('No data'); return; } let headers=['Roll','Name','Grade','Biology','Chemistry','Physics','Agriculture','ICT','English','Total','Percentage','Grade','Status']; let rows=students.map(s=>{ let total=calculateTotal(s), p=calculatePercentage(s), g=calculateGrade(p), status=isPassed(s)?'Pass':'Fail'; return [s.roll,s.name,s.grade,s.biology,s.chemistry,s.physics,s.agriculture,s.ict,s.english,total,p+'%',g.grade,status]; }); let csv=[headers,...rows].map(r=>r.join(',')).join('\n'); let blob=new Blob([csv],{type:'text/csv'}); let a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='hopeful_generation_results.csv'; a.click(); URL.revokeObjectURL(blob); alert('Exported!'); }
+        function printReport() { window.print(); }
+        function updateDisplay() { displayRecords(); document.getElementById('searchInput').value=''; }
+        window.onclick = function(e) { if(e.target===document.getElementById('editModal')) closeModal(); }
+        checkSession();
+    </script>
+</body>
+</html>
